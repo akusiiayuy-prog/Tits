@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard">
+    <div class="card">
+        <h3>Linked Instagram Accounts</h3>
+        <div class="account-list">
+            {% for account in accounts %}
+            <div class="account-item">
+                <span>@{{ account.username }}</span>
+                <form action="{{ url_for('delete_account', account_id=account.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
+            </div>
+            {% else %}
+            <p>No Instagram accounts linked yet.</p>
+            {% endfor %}
+        </div>
+        <hr>
+        <h4>Add New Account</h4>
+        <form action="{{ url_for('add_account') }}" method="POST" class="form-inline">
+            <input type="text" name="cookie_string" placeholder="Paste Instagram cookie string here" required>
+            <button type="submit" class="btn">Add Account</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Perform Action</h3>
+        <form action="{{ url_for('perform_action') }}" method="POST">
+            <div class="form-group">
+                <label for="account_id">Use Account:</label>
+                <select name="account_id" required>
+                    {% for account in accounts %}
+                    <option value="{{ account.id }}">@{{ account.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="action">Action:</label>
+                <select name="action" id="action-select">
+                    <option value="follow">Follow</option>
+                    <option value="like">Like</option>
+                    <option value="comment">Comment</option>
+                    <option value="scrape">Scrape Profile</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="target">Target (Username or Post URL):</label>
+                <input type="text" name="target" required>
+            </div>
+            <div class="form-group" id="comment-group" style="display: none;">
+                <label for="comment_text">Comment Text:</label>
+                <textarea name="comment_text"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">🚀 Run Action</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('action-select').addEventListener('change', function() {
+        var commentGroup = document.getElementById('comment-group');
+        if (this.value === 'comment') {
+            commentGroup.style.display = 'block';
+        } else {
+            commentGroup.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
